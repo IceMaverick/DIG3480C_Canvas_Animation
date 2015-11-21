@@ -45,6 +45,31 @@
 		function Cloud(x, y) {
 			this.x = x;
 			this.y = y;
+			this.r = Math.floor(Math.random() * 10 + 30);
+			this.x1 = x + Math.floor(Math.random() * 15 + 20);
+			this.y1 = y + Math.floor(Math.random() * 15 + 30);
+			this.r1 = Math.floor(Math.random() * 10 + 30);
+			this.x2 = this.x1 + Math.floor(Math.random() * 15 + 40);
+			this.y2 = this.y1 + Math.floor(Math.random() * 15 + 30);
+			this.r2 = Math.floor(Math.random() * 10 + 20);
+			this.x3 = this.x2 + Math.floor(Math.random() * 15 + 30);
+			this.y3 = this.y2 + Math.floor(Math.random() * 15 - 30);
+			this.r3 = Math.floor(Math.random() * 10 + 30);
+			this.x4 = this.x3 + Math.floor(Math.random() * 15 + 30);
+			this.y4 = this.y3 + Math.floor(Math.random() * 15 - 30);
+			this.r4 = Math.floor(Math.random() * 10 + 20);
+			this.x5 = this.x4 + Math.floor(Math.random() * 15 - 30);
+			this.y5 = this.y4 + Math.floor(Math.random() * 15 - 30);
+			this.r5 = Math.floor(Math.random() * 10 + 30);
+			this.x6 = this.x5 + Math.floor(Math.random() * 15 - 40);
+			this.y6 = this.y5 + Math.floor(Math.random() * 15 - 20);
+			this.r6 = Math.floor(Math.random() * 10 + 40);
+			this.x7 = this.x + 60;
+			this.y7 = this.y + 30;
+			this.r7 = 50;
+			this.x8 = this.x6 + Math.floor(Math.random() * 15 - 50);
+			this.y8= this.y6 + Math.floor(Math.random() * 15 - 20);
+			this.r8 = Math.floor(Math.random() * 10 + 30);
 			this.color = 'white';
 			this.dx = (Math.floor(Math.random() * 10 - 5) + 2) / 2;
 			if (this.dx == 0) {
@@ -53,11 +78,45 @@
 		}
 		
 		function drawCloud(circle) {
-			context.beginPath();
-			context.arc(circle.x, circle.y, 30, 0, degreesToRadians(360), false);
+			//In hindsight, an array may have been better for these coordinates... If Revisit for final, ensure to convert to array.
+			//Also, feed this process into a for loop instead. Code is so unnecessarily long right now.
 			context.fillStyle = circle.color;
-			context.fill();
+			context.beginPath();
+			context.arc(circle.x, circle.y, circle.r, 0, degreesToRadians(360), false);
 			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(circle.x1, circle.y1, circle.r1, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(circle.x2, circle.y2, circle.r2, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(circle.x3, circle.y3, circle.r3, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(circle.x4, circle.y4, circle.r4, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(circle.x5, circle.y5, circle.r5, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(circle.x6, circle.y6, circle.r6, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(circle.x7, circle.y7, circle.r7, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(circle.x8, circle.y8, circle.r8, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
 			
 			/*context.beginPath();
 			context.moveTo(circle.x,circle.y);
@@ -68,15 +127,40 @@
 			context.fill();
 			context.closePath();*/
 			
-			if (circle.x + circle.dx > canvas.width || circle.x + circle.dx < 0)
-			circle.dx = -circle.dx;
-			if (circle.y + circle.dy > canvas.height || circle.y + circle.dy < 0)
-			circle.dy = -circle.dy;
-			if (circle.x + circle.dx > canvas.width +50 || circle.x + circle.dx < -50)
-			circle.x = canvas.width/2;
-			if (circle.y + circle.dy > canvas.height +50 || circle.y + circle.dy < -50)
-			circle.y = 	canvas.height/2;		
+			if (circle.x + circle.dx > canvas.width + 100 || circle.x + circle.dx < -300) {
+				circle.dx = -circle.dx;
+				var move = Math.floor(Math.random() * 150 - 100);
+				circle.y += move;
+				circle.y1 += move;
+				circle.y2 += move;
+				circle.y3 += move;
+				circle.y4 += move;
+				circle.y5 += move;
+				circle.y6 += move;
+				circle.y7 += move;
+				circle.y8 += move;
+			}
+			if (circle.y > canvas.height + 50 || circle.y > 2*canvas.height/3) {
+				var move = Math.floor(Math.random() * 150 - 400);
+				circle.y += move;
+				circle.y1 += move;
+				circle.y2 += move;
+				circle.y3 += move;
+				circle.y4 += move;
+				circle.y5 += move;
+				circle.y6 += move;
+				circle.y7 += move;
+				circle.y8 += move;
+			}
 			circle.x += circle.dx;
+			circle.x1 += circle.dx;
+			circle.x2 += circle.dx;
+			circle.x3 += circle.dx;
+			circle.x4 += circle.dx;
+			circle.x5 += circle.dx;
+			circle.x6 += circle.dx;
+			circle.x7 += circle.dx;
+			circle.x8 += circle.dx;
 		}
 		
 		function handleClick(x, y) {
