@@ -3,11 +3,101 @@
 	<head>
 		<title>Project Three: Canvas Animation</title>
 		<script>
+		var canvas;
+		var context;
+		var clouds = [];
+		var timer;
 		
+		function init() {
+			canvas = document.getElementById('canvas');
+			context = canvas.getContext('2d');
+			
+			window.addEventListener('resize', resizeCanvas, false);
+			window.addEventListener('orientationchange', resizeCanvas, false);
+			resizeCanvas();
+			canvas.onclick = function(event) {
+				handleClick(event.clientX, event.clientY);
+			};
+			timer = setInterval(resizeCanvas, 30);
+		}
 		
+		function resizeCanvas() {
+			canvas.width = window.innerWidth - 20;
+			canvas.height = window.innerHeight - 20;
+			fillBackgroundColor();
+			
+			for(var i = 0; i < clouds.length; i++) {
+				drawCloud(clouds[i]);
+			}
+		}
+
+		function fillBackgroundColor() {
+			context.fillStyle = '#66e0ff';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = '#009900';
+			context.fillRect(0, 2*canvas.height/3, canvas.width, canvas.height);
+		}
+
+		function degreesToRadians(degrees) {
+			return (degrees * Math.PI)/180;
+		}
 		
+		function Cloud(x, y) {
+			this.x = x;
+			this.y = y;
+			this.color = 'white';
+			this.dx = (Math.floor(Math.random() * 10 - 5) + 2) / 2;
+			if (this.dx == 0) {
+			this.dx -= 1;
+			}
+		}
 		
+		function drawCloud(circle) {
+			context.beginPath();
+			context.arc(circle.x, circle.y, 30, 0, degreesToRadians(360), false);
+			context.fillStyle = circle.color;
+			context.fill();
+			context.closePath();
+			
+			/*context.beginPath();
+			context.moveTo(circle.x,circle.y);
+			context.quadraticCurveTo(circle.x-10,circle.y+80,circle.x+50,circle.y+50);
+			context.quadraticCurveTo(circle.x+75,circle.y+100,circle.x+100,circle.y+70);
+			context.quadraticCurveTo(circle.x+175,circle.y+100,circle.x+150,circle.y+25);
+			context.quadraticCurveTo(circle.x-75,circle.y-25,circle.x, circle.y);
+			context.fill();
+			context.closePath();*/
+			
+			if (circle.x + circle.dx > canvas.width || circle.x + circle.dx < 0)
+			circle.dx = -circle.dx;
+			if (circle.y + circle.dy > canvas.height || circle.y + circle.dy < 0)
+			circle.dy = -circle.dy;
+			if (circle.x + circle.dx > canvas.width +50 || circle.x + circle.dx < -50)
+			circle.x = canvas.width/2;
+			if (circle.y + circle.dy > canvas.height +50 || circle.y + circle.dy < -50)
+			circle.y = 	canvas.height/2;		
+			circle.x += circle.dx;
+		}
 		
+		function handleClick(x, y) {
+			var found = false;
+			for(var i = 0; i < clouds.length; i++) {
+				d = Math.sqrt((clouds[i].x - x) * (clouds[i].x - x) + (clouds[i].y - y) * (clouds[i].y - y));
+				if (d <= 30) {
+					clouds.splice(i, 1);
+					found = true;
+				}
+			}
+			fillBackgroundColor();
+			if (!found) {
+				clouds.push(new Cloud(x, y));
+			}
+			for (var i = 0; i < clouds.length; i++) {
+				drawCloud(clouds[i]);
+			}
+		}
+		
+		window.onload = init;
 		
 		</script>
 	</head>
