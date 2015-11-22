@@ -6,7 +6,10 @@
 		var canvas;
 		var context;
 		var clouds = [];
+		var grasses = [];
+		var flowers = [];
 		var timer;
+		var theSun = new Sun();
 		
 		function init() {
 			canvas = document.getElementById('canvas');
@@ -15,6 +18,7 @@
 			window.addEventListener('resize', resizeCanvas, false);
 			window.addEventListener('orientationchange', resizeCanvas, false);
 			resizeCanvas();
+			drawSun(theSun);
 			canvas.onclick = function(event) {
 				handleClick(event.clientX, event.clientY);
 			};
@@ -26,14 +30,34 @@
 			canvas.height = window.innerHeight - 20;
 			fillBackgroundColor();
 			
+			drawSun(theSun);
+			
 			for(var i = 0; i < clouds.length; i++) {
 				drawCloud(clouds[i]);
 			}
+			
+			//layers the grass over the sky block. I suppose these rectangles count as a shape, huh?
+			//had to move a copy of this outside of fillBackgroundColor(); in order to make clouds look less silly.
+			context.fillStyle = '#009900';
+			context.fillRect(0, 2*canvas.height/3, canvas.width, canvas.height);
+			
+			drawSign();
+			
+			for(var i = 0; i < grasses.length; i++) {
+				drawGrass(grasses[i]);
+			}
+			
+			for(var i = 0; i < flowers.length; i++) {
+				drawFlower(flowers[i]);
+			}
+			
 		}
 
 		function fillBackgroundColor() {
+			//handles creating the sky
 			context.fillStyle = '#66e0ff';
 			context.fillRect(0, 0, canvas.width, canvas.height);
+			//bottom layer so it doesn't disappear constantly when adding new objects and refreshing the canvas.
 			context.fillStyle = '#009900';
 			context.fillRect(0, 2*canvas.height/3, canvas.width, canvas.height);
 		}
@@ -43,6 +67,7 @@
 		}
 		
 		function Cloud(x, y) {
+			//sweet jesus, remember to use arrays next time. This was so tedious to type out.
 			this.x = x;
 			this.y = y;
 			this.r = Math.floor(Math.random() * 10 + 30);
@@ -118,15 +143,7 @@
 			context.closePath();
 			context.fill();
 			
-			/*context.beginPath();
-			context.moveTo(circle.x,circle.y);
-			context.quadraticCurveTo(circle.x-10,circle.y+80,circle.x+50,circle.y+50);
-			context.quadraticCurveTo(circle.x+75,circle.y+100,circle.x+100,circle.y+70);
-			context.quadraticCurveTo(circle.x+175,circle.y+100,circle.x+150,circle.y+25);
-			context.quadraticCurveTo(circle.x-75,circle.y-25,circle.x, circle.y);
-			context.fill();
-			context.closePath();*/
-			
+			//handles off-screen clouds; randomly moves their verticle position within reason and sends it back.
 			if (circle.x + circle.dx > canvas.width + 100 || circle.x + circle.dx < -300) {
 				circle.dx = -circle.dx;
 				var move = Math.floor(Math.random() * 150 - 100);
@@ -140,6 +157,7 @@
 				circle.y7 += move;
 				circle.y8 += move;
 			}
+			//handles clouds that have their centers past the sky/ground line.
 			if (circle.y > canvas.height + 50 || circle.y > 2*canvas.height/3) {
 				var move = Math.floor(Math.random() * 150 - 400);
 				circle.y += move;
@@ -163,21 +181,146 @@
 			circle.x8 += circle.dx;
 		}
 		
+		//generates properties for grass
+		function Grass(x, y) {
+			this.x = x;
+			this.y = y;
+			this.color = '#00ff00';
+		}
+		
+		//actually draws the grass with little curves. Not randomly generated shapes because quadratic curves look dumb with randomness introduced.
+		function drawGrass(grass) {
+			context.fillStyle = grass.color;
+			context.beginPath();
+			context.moveTo(grass.x, grass.y);
+			context.quadraticCurveTo(grass.x - 10, grass.y - 38, grass.x - 30, grass.y - 35);
+			context.quadraticCurveTo(grass.x + 5, grass.y - 45, grass.x + 8, grass.y-10);
+			context.quadraticCurveTo(grass.x + 10, grass.y - 40, grass.x + 30, grass.y - 30);
+			context.quadraticCurveTo(grass.x + 15, grass.y - 30, grass.x + 15, grass.y);
+			context.fill();
+			
+			//tosses grass back on the ground if the canvas is resized to be larger and the grass finds itself off of the ground.
+			if (grass.y < 2*canvas.height/3) {
+				grass.y = (2*canvas.height/3) + Math.floor(Math.random() * 100);
+			}
+		}
+		
+		//creates properties for flowers
+		function Flower (x, y) {
+			this.x = x;
+			this.y = y;
+			var colors = ["#DD2222", "#4444FF", "#FF8800", "#CC33FF", "#FFFF80", "#00FFFF", "#FF00FF", "0000CC", "white"];
+			this.color = colors[Math.floor(Math.random()*colors.length)];
+		}
+		
+		function drawFlower (flower) {
+			//constructs the base and the stem
+			context.fillStyle = '#00FF00';
+			context.strokeStyle = '#00FF00';
+			context.beginPath();
+			context.moveTo(flower.x, flower.y);
+			context.quadraticCurveTo(flower.x - 10, flower.y - 38, flower.x - 30, flower.y - 35);
+			context.quadraticCurveTo(flower.x + 5, flower.y - 45, flower.x + 8, flower.y-10);
+			context.quadraticCurveTo(flower.x + 10, flower.y - 40, flower.x + 30, flower.y - 30);
+			context.quadraticCurveTo(flower.x + 15, flower.y - 30, flower.x + 15, flower.y);
+			context.moveTo(flower.x + 7, flower.y);
+			context.lineTo(flower.x +7, flower.y - 75)
+			context.closePath();
+			context.fill();
+			context.stroke();
+			
+			//constructs the petals.
+			context.fillStyle = flower.color;
+			context.beginPath();
+			context.arc(flower.x + 17, flower.y - 75, 10, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(flower.x - 3, flower.y - 75, 10, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(flower.x + 12, flower.y - 85, 10, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(flower.x + 2, flower.y - 85, 10, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(flower.x + 12, flower.y - 65, 10, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			context.beginPath();
+			context.arc(flower.x + 2, flower.y - 65, 10, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			
+			context.beginPath();
+			context.arc(flower.x + 7, flower.y - 75, 10, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fillStyle = '#FFFF33';
+			context.fill();	
+			
+			//tosses flowers back on the ground if the canvas is resized and they find themselves in space.
+			if (flower.y < 2*canvas.height/3) {
+				flower.y = (2*canvas.height/3) + Math.floor(Math.random() * 100);
+			}
+		}
+		
+		function Sun() {
+			this.x = 100;
+			this.y = 100;
+			this.dx = 0.2;
+		}
+		
+		function drawSun(sun) {
+			//tosses a happy little sun up in the corner. Just for taste.
+			context.fillStyle = '#FFFF33';
+			context.beginPath();
+			context.arc(sun.x, sun.y, 40, 0, degreesToRadians(360), false);
+			context.closePath();
+			context.fill();
+			sun.x += sun.dx;
+			
+			if (sun.x > canvas.width + 50) {
+				sun.x = -50;
+			}
+		}
+		
+		function drawSign() {
+			//draws a signpost with instructions.
+			context.fillStyle = '#663300';
+			context.fillRect(50, (2*canvas.height/3) - 25, 100, 50);
+			context.fillRect(99, (2*canvas.height/3) - 28, 5, 75);
+			context.fillStyle = '#FFFFFF';
+			context.font = '17px serif';
+			context.textAlign = 'center';
+			context.fillText ('Click Around!', 100, (2*canvas.height/3));
+		}
+		
+		//basic conditionals to handle the click based on position to determine what to spawn.
 		function handleClick(x, y) {
-			var found = false;
-			for(var i = 0; i < clouds.length; i++) {
-				d = Math.sqrt((clouds[i].x - x) * (clouds[i].x - x) + (clouds[i].y - y) * (clouds[i].y - y));
-				if (d <= 30) {
-					clouds.splice(i, 1);
-					found = true;
+			resizeCanvas();
+			check = Math.floor(Math.random() * 10);
+			console.log(check);
+			if (y < 2*canvas.height/3) {
+				clouds.push(new Cloud(x, y));
+				for (var i = 0; i < clouds.length; i++) {
+					drawCloud(clouds[i]);
 				}
 			}
-			fillBackgroundColor();
-			if (!found) {
-				clouds.push(new Cloud(x, y));
+			else if (check < 5){
+				grasses.push(new Grass(x, y));
+				for (var i = 0; i < grasses.length; i++) {
+					drawGrass(grasses[i]);
+				}
 			}
-			for (var i = 0; i < clouds.length; i++) {
-				drawCloud(clouds[i]);
+			else if (check > 4) {
+				flowers.push(new Flower(x, y));
+				for (var i =0; i < flowers.length; i++) {
+					drawFlower(flowers[i]);
+				}
 			}
 		}
 		
