@@ -158,20 +158,8 @@
 				circle.y8 += move;
 			}
 			//handles clouds that have their centers past the sky/ground line.
-			if (circle.y > 2*canvas.height/3) {
+			if (circle.y > canvas.height + 50 || circle.y > 2*canvas.height/3) {
 				var move = Math.floor(Math.random() * 150 - 400);
-				circle.y += move;
-				circle.y1 += move;
-				circle.y2 += move;
-				circle.y3 += move;
-				circle.y4 += move;
-				circle.y5 += move;
-				circle.y6 += move;
-				circle.y7 += move;
-				circle.y8 += move;
-			}
-			if (circle.y > canvas.height) {
-				var move = Math.floor(Math.random() * 150 + 100);
 				circle.y += move;
 				circle.y1 += move;
 				circle.y2 += move;
@@ -305,7 +293,7 @@
 			context.fillStyle = '#663300';
 			context.fillRect(50, (2*canvas.height/3) - 25, 100, 50);
 			context.fillRect(99, (2*canvas.height/3) - 28, 5, 75);
-			context.fillStyle = '#FEFEFE';
+			context.fillStyle = '#FFFFFF';
 			context.font = '17px serif';
 			context.textAlign = 'center';
 			context.fillText ('Click Around!', 100, (2*canvas.height/3));
