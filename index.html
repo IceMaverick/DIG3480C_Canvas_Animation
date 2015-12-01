@@ -209,6 +209,8 @@
 		function Flower (x, y) {
 			this.x = x;
 			this.y = y;
+			this.dx = 0.2;
+			this.tracker = x;
 			var colors = ["#DD2222", "#4444FF", "#FF8800", "#CC33FF", "#FFFF80", "#00FFFF", "#FF00FF", "0000CC", "white"];
 			this.color = colors[Math.floor(Math.random()*colors.length)];
 		}
@@ -219,12 +221,12 @@
 			context.strokeStyle = '#00FF00';
 			context.beginPath();
 			context.moveTo(flower.x, flower.y);
-			context.quadraticCurveTo(flower.x - 10, flower.y - 38, flower.x - 30, flower.y - 35);
-			context.quadraticCurveTo(flower.x + 5, flower.y - 45, flower.x + 8, flower.y-10);
+			context.quadraticCurveTo(flower.x, flower.y - 30, flower.x - 15, flower.y - 30);
+			context.quadraticCurveTo(flower.x + 3, flower.y - 40, flower.x + 8, flower.y-20);
 			context.quadraticCurveTo(flower.x + 10, flower.y - 40, flower.x + 30, flower.y - 30);
 			context.quadraticCurveTo(flower.x + 15, flower.y - 30, flower.x + 15, flower.y);
-			context.moveTo(flower.x + 7, flower.y);
-			context.lineTo(flower.x +7, flower.y - 75)
+			context.moveTo(flower.x + 7.5, flower.y);
+			context.lineTo(flower.x + 7.5, flower.y - 75)
 			context.closePath();
 			context.fill();
 			context.stroke();
@@ -303,7 +305,6 @@
 		function handleClick(x, y) {
 			resizeCanvas();
 			check = Math.floor(Math.random() * 10);
-			console.log(check);
 			if (y < 2*canvas.height/3) {
 				clouds.push(new Cloud(x, y));
 				for (var i = 0; i < clouds.length; i++) {
